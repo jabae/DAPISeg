@@ -1,0 +1,7 @@
+numpy
+tifffile
+matplotlib
+
+torch
+torchvision
+torchaudio
