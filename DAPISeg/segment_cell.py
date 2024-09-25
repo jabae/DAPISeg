@@ -91,7 +91,7 @@ if __name__ == "__main__":
 	parser.add_argument("--nucleus", required=True, type=str,
 		help="Path to nuecleus prediction image in cloudvolume, png, or tif format")
 	parser.add_argument("--image", required=True, type=str,
-		help="Path to EM image")
+		help="Path to image")
 	parser.add_argument("--output", required=False, type=str, default="cell_segment.tif",
 		help="Path to save cell segmentation image in cloudvolume, png, or tif format")
 
