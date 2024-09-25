@@ -26,6 +26,6 @@ class Model(nn.Module):
 
   def load(self, fpath):
 
-    state_dict = torch.load(fpath)
+    state_dict = torch.load(fpath, weights_only=False)
     
     self.model.load_state_dict(state_dict, strict=False)
