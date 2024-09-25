@@ -74,7 +74,7 @@ def segment_cell(img, pred):
 	idx_all = np.array(idx_all).T
 
 	tree = cKDTree(cent_list)
-	dd, ii = tree.queery(idx_all, k=1)
+	dd, ii = tree.query(idx_all, k=1)
 
 	cell_seg = np.zeros((h,w), dtype="uint16")
 	for i in range(idx_all.shape[0]):
@@ -85,7 +85,6 @@ def segment_cell(img, pred):
 	return cell_seg
 
 
-
 if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser()
@@ -93,16 +92,19 @@ if __name__ == "__main__":
 		help="Path to nuecleus prediction image in cloudvolume, png, or tif format")
 	parser.add_argument("--image", required=True, type=str,
 		help="Path to EM image")
+	parser.add_argument("--output", required=False, type=str, default="cell_segment.tif",
+		help="Path to save cell segmentation image in cloudvolume, png, or tif format")
 
 
 	args = parser.parse_args()
 
 	img_path = args.image
 	pred_path = args.nucleus
+	output_path = args.output
 
 	img = read_image(img_path)
 	nuc_pred = read_image(pred_path)
 
 	# main
 	cell_seg = segment_cell(img, nuc_pred)
-	save_image("cell_segment.tif", cell_seg)
+	save_image(output_path, cell_seg)

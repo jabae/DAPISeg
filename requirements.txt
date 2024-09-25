@@ -1,6 +1,9 @@
 numpy
+scipy
 tifffile
 matplotlib
+connected-components-3d
+cloud-volume
 
 torch
 torchvision
