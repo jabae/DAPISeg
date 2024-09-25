@@ -28,7 +28,7 @@ def run_inference(model, image, device='cpu'):
 	overlap_size = (32, 32)
 
 	model = model.to(device)
-	
+
 	bbox_list = chunk_bboxes(image_size, patch_size, overlap_size)
 
 	pred = np.zeros(image_size)
@@ -74,11 +74,9 @@ if __name__ == "__main__":
 
 	# Load image
 	image = read_image(img_path)
-
 	image = preprocess(image)
-	
 
 	# Run inference
 	device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-	nucleus_pred = run_inference(model, image_tensor, device)
+	nucleus_pred = run_inference(model, image, device)
 	save_image(output_path, nucleus_pred)
