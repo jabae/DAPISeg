@@ -37,7 +37,7 @@ def run_inference(model, image, device='cpu'):
 
 		for b in bbox_list:
 
-			patch = image[0,0,b[0][0]:b[1][0],b[0][1]:b[1][1]]
+			patch = image[:,:,b[0][0]:b[1][0],b[0][1]:b[1][1]]
 			patch_tensor = torch.from_numpy(patch)
 			patch_tensor = patch_tensor.to(device)
 			
