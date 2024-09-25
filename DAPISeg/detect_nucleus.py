@@ -15,7 +15,7 @@ def preprocess(img):
 	if img.max() > 10:
 		img = img/255
 
-	img = np.reshape(img, (1,)+img.shape)
+	img = np.reshape(img, (1,1,)+img.shape)
 
 	return img.astype("float32")
 	
@@ -55,6 +55,7 @@ if __name__ == "__main__":
 
 	# Load image
 	image = read_image(img_path)
+	image = image[:128,:128]
 	image = preprocess(image)
 	image_tensor = torch.from_numpy(image)
 
