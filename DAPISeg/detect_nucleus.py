@@ -6,7 +6,7 @@ import argparse
 import torch
 import numpy as np
 
-from utils import read_image, save_image, load_model
+from utils import read_image, save_image, load_model, chunk_bboxes
 
 
 
@@ -21,14 +21,33 @@ def preprocess(img):
 	
 
 # Define a function to run inference
-def run_inference(model, image_tensor, device='cpu'):
+def run_inference(model, image, device='cpu'):
 
-	image_tensor = image_tensor.to(device)
+	image_size = image.shape[2:]
+	patch_size = (128, 128)
+	overlap_size = (32, 32)
+
 	model = model.to(device)
+	
+	bbox_list = chunk_bboxes(image_size, patch_size, overlap_size)
 
+	pred = np.zeros(image_size)
 	# Run the inference
 	with torch.no_grad():
-		pred = model(image_tensor)
+
+		for b in bbox_list:
+
+			patch = image[b[0][0]:b[1][0],
+										b[0][1]:b[1][1]]
+			patch_tensor = torch.from_numpy(patch)
+			patch_tensor = patch_tensor.to(device)
+			
+			pred_patch = model(patch_tensor)
+			pred_patch = pred_patch.numpy()
+			pred_patch = pred_patch[overlap_size[0]:patch_size[0]-overlap_size[0]//2,
+															overlap_size[1]:patch_size[1]-overlap_size[1]//2]
+			pred[b[0][0]+overlap_size[0]//2:b[1][0]-overlap_size[0]//2,
+					 b[0][1]+overlap_size[1]//2:b[1][1]-overlap_size[1]//2] = pred_patch
 
 	pred = torch.sigmoid(pred)
 
@@ -55,10 +74,11 @@ if __name__ == "__main__":
 
 	# Load image
 	image = read_image(img_path)
-	image = image[:128,:128]
+
 	image = preprocess(image)
-	image_tensor = torch.from_numpy(image)
+	
 
 	# Run inference
 	device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	nucleus_pred = run_inference(model, image_tensor, device)
+	save_image(output_path, nucleus_pred)
