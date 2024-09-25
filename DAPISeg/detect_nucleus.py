@@ -9,7 +9,7 @@ import numpy as np
 from utils import read_image, save_image, load_model, chunk_bboxes
 
 
-
+# Preprocess
 def preprocess(img):
 
 	if img.max() > 10:
@@ -19,7 +19,6 @@ def preprocess(img):
 
 	return img.astype("float32")
 	
-
 # Define a function to run inference
 def run_inference(model, image, device='cpu'):
 
@@ -42,6 +41,7 @@ def run_inference(model, image, device='cpu'):
 			patch_tensor = patch_tensor.to(device)
 			
 			pred_patch = model(patch_tensor)
+			pred_patch = torch.sigmoid(pred_patch)
 			pred_patch = pred_patch.cpu().numpy()
 			pred_patch = pred_patch[0, 0,
 															overlap_size[0]//2:patch_size[0]-overlap_size[0]//2,
@@ -49,9 +49,8 @@ def run_inference(model, image, device='cpu'):
 			pred[b[0][0]+overlap_size[0]//2:b[1][0]-overlap_size[0]//2,
 					 b[0][1]+overlap_size[1]//2:b[1][1]-overlap_size[1]//2] = pred_patch
 
-	pred = torch.sigmoid(pred)
-
 	return pred
+
 
 if __name__ == "__main__":
 
