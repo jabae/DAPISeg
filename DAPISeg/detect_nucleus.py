@@ -5,60 +5,20 @@ Script to predict nucleus.
 import argparse
 import torch
 import torch.nn as nn
-from torchvision import transforms
-from PIL import Image
-from utils import read_image, save_image
 
-from nets.unet import UNet
+from utils import read_image, save_image, load_model
 
 
-class Model(nn.Module):
-  """
-  Model wrapper for training.
-  """
-  
-  def __init__(self, model):
 
-    super(Model, self).__init__()
-    self.model = model
+def preprocess(img):
 
-  def forward(self, sample):
+	if img.max() > 10:
+		img = img/255
 
-    mask = self.model(sample['image'])
-    
-    preds = {}
-    preds["mask"] = torch.sigmoid(mask)
-    
-    return preds
+	img = np.reshape(img, (1,)+img.shape)
 
-  def save(self, fpath):
-
-    torch.save(self.model.state_dict(), fpath)
-
-  def load(self, fpath):
-
-    state_dict = torch.load(fpath)
-    
-    self.model.load_state_dict(state_dict, strict=False)
-
-
-def load_chkpt(model, path):
-
-  model.load(path)
-
-  return model
-
-
-# Define a function to load the model in chkpt file
-def load_model(model_path):
-
-	net = UNet()
-	net.cuda()
-	model = Model(net)
+	return img
 	
-	model = load_chkpt(model, model_path)
-
-	return model.eval()
 
 # Define a function to run inference
 def run_inference(model, image_tensor, device='cpu'):
@@ -95,6 +55,7 @@ if __name__ == "__main__":
 
 	# Load image
 	image = read_image(img_path)
+	image = preprocess(image)
 	image_tensor = torch.from_numpy(image)
 
 	# Run inference

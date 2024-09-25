@@ -3,6 +3,9 @@ import tifffile as tif
 import matplotlib.image as image
 from cloudvolume import CloudVolume
 
+from model import Model
+from nets.unet import UNet
+
 # Read image
 def read_image(img_path):
 
@@ -46,3 +49,21 @@ def normalize_image(img):
 		img = img/255
 
 	return img.astype("float64")
+
+
+def load_model(model_path):
+
+	net = UNet()
+	net.cuda()
+	model = Model(net)
+	
+	model = load_chkpt(model, model_path)
+
+	return model.eval()
+
+
+def load_chkpt(model, path):
+
+  model.load(path)
+
+  return model
