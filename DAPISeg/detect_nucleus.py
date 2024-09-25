@@ -17,7 +17,7 @@ def preprocess(img):
 
 	img = np.reshape(img, (1,)+img.shape)
 
-	return img
+	return img.astype("float64")
 	
 
 # Define a function to run inference
