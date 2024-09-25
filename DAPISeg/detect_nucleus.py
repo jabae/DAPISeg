@@ -4,7 +4,7 @@ Script to predict nucleus.
 
 import argparse
 import torch
-import torch.nn as nn
+import numpy as np
 
 from utils import read_image, save_image, load_model
 
