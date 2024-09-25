@@ -38,3 +38,11 @@ def save_image(img_path, img):
 	elif img_path[-3:] == "tif":
 
 		tif.imwrite(img_path, img)
+
+
+def normalize_image(img):
+
+	if img.max()>10:
+		img = img/255
+
+	return img.astype("float64")
