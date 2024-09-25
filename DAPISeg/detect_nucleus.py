@@ -43,7 +43,8 @@ def run_inference(model, image, device='cpu'):
 			
 			pred_patch = model(patch_tensor)
 			pred_patch = pred_patch.cpu().numpy()
-			pred_patch = pred_patch[overlap_size[0]:patch_size[0]-overlap_size[0]//2,
+			pred_patch = pred_patch[0, 0,
+															overlap_size[0]:patch_size[0]-overlap_size[0]//2,
 															overlap_size[1]:patch_size[1]-overlap_size[1]//2]
 			pred[b[0][0]+overlap_size[0]//2:b[1][0]-overlap_size[0]//2,
 					 b[0][1]+overlap_size[1]//2:b[1][1]-overlap_size[1]//2] = pred_patch
