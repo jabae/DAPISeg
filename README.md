@@ -10,6 +10,7 @@ pip install -r requirements.txt
 ```
 ## Pipeline
 DAPISeg consists of two steps: 1. nucleus prediction and 2. cell segmentation. 
+![](figures/pipeline.png)
 
 ### Nucleus prediction
 ```
