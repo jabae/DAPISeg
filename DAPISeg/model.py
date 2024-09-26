@@ -14,8 +14,7 @@ class Model(nn.Module):
 
   def forward(self, sample):
 
-    mask = self.model(sample)
-    
+    mask = self.model(sample)    
     pred = torch.sigmoid(mask)
     
     return pred

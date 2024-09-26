@@ -30,7 +30,7 @@ def run_inference(model, image, device='cpu'):
 
 	bbox_list = chunk_bboxes(image_size, patch_size, overlap_size)
 
-	pred = np.zeros(image_size)
+	pred = np.zeros(image_size, dtype="uint8")
 	# Run the inference
 	with torch.no_grad():
 
@@ -41,15 +41,37 @@ def run_inference(model, image, device='cpu'):
 			patch_tensor = patch_tensor.to(device)
 			
 			pred_patch = model(patch_tensor)
-			pred_patch = torch.sigmoid(pred_patch)
 			pred_patch = pred_patch.cpu().numpy()
+
 			pred_patch = pred_patch[0, 0,
 															overlap_size[0]//2:patch_size[0]-overlap_size[0]//2,
 															overlap_size[1]//2:patch_size[1]-overlap_size[1]//2]
 			pred[b[0][0]+overlap_size[0]//2:b[1][0]-overlap_size[0]//2,
-					 b[0][1]+overlap_size[1]//2:b[1][1]-overlap_size[1]//2] = pred_patch
+					 b[0][1]+overlap_size[1]//2:b[1][1]-overlap_size[1]//2] = (pred_patch*255).astype("uint8")
 
 	return pred
+
+# Postprocess (filter valid regions with signal)
+def postprocess(pred, img):
+
+	h, w = img.shape[2:]
+	kw = 15
+	ithr = 0.15
+
+	kernel = np.ones((kw,kw), dtype="uint8")
+
+	img_mask = np.zeros((h,w), dtype="uint8")
+	for i in range(h-kw):
+		for j in range(w-kw):
+
+			if np.mean(img[0,0,i:i+kw,j:j+kw])<ithr:
+				img_mask[i+kw//2,j+kw//2] = 1
+
+	img_mask = img_mask.astype("bool")
+	pred[img_mask] = 0
+
+	return pred
+
 
 
 if __name__ == "__main__":
@@ -78,4 +100,7 @@ if __name__ == "__main__":
 	# Run inference
 	device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	nucleus_pred = run_inference(model, image, device)
+	nucleus_pred = postprocess(nucleus_pred, image)
+
+	# Save output
 	save_image(output_path, nucleus_pred)

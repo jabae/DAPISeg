@@ -105,6 +105,8 @@ if __name__ == "__main__":
 	img = read_image(img_path)
 	nuc_pred = read_image(pred_path)
 
-	# main
+	# Segment
 	cell_seg = segment_cell(img, nuc_pred)
+
+	# Save output
 	save_image(output_path, cell_seg)

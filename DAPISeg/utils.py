@@ -38,6 +38,9 @@ def save_image(img_path, img):
 
 	if img_path[-3:] == "png":
 
+		if len(img.shape)==2:
+			img = np.concatenate(([img.reshape(img.shape+(1,))]*3), axis=2)
+			
 		image.imsave(img_path, img)
 
 	elif img_path[-3:] == "tif":
